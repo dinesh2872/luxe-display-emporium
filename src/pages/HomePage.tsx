@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, Truck, Award } from 'lucide-react';
@@ -42,8 +41,9 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero carousel with featured products */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Replace with your HeroCarousel component if you have one */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -52,7 +52,6 @@ const HomePage: React.FC = () => {
         >
           <div className="absolute inset-0 bg-hero-gradient"></div>
         </div>
-        
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
             <span className="luxury-text-gradient">Hilal Luxe</span>
@@ -76,63 +75,17 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-luxury-cream">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-luxury-black mb-4">
-              Why Choose <span className="luxury-text-gradient">Hilal Luxe</span>?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We combine traditional craftsmanship with modern innovation to create display solutions that are both functional and breathtakingly beautiful.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: <Award className="w-12 h-12 text-luxury-gold" />,
-                title: "Premium Quality",
-                description: "Each piece is meticulously crafted using only the finest materials and time-honored techniques.",
-              },
-              {
-                icon: <Shield className="w-12 h-12 text-luxury-gold" />,
-                title: "Lifetime Warranty",
-                description: "We stand behind our craftsmanship with comprehensive warranty coverage for peace of mind.",
-              },
-              {
-                icon: <Truck className="w-12 h-12 text-luxury-gold" />,
-                title: "White Glove Delivery",
-                description: "Professional installation and setup service ensures your display is perfectly positioned.",
-              },
-              {
-                icon: <Star className="w-12 h-12 text-luxury-gold" />,
-                title: "Custom Design",
-                description: "Work with our designers to create bespoke solutions tailored to your unique requirements.",
-              },
-            ].map((feature, index) => (
-              <Card key={index} className="p-8 text-center luxury-card animate-scale-in hover:transform hover:scale-105 transition-all duration-300">
-                <div className="flex justify-center mb-6">{feature.icon}</div>
-                <h3 className="text-xl font-semibold mb-4 text-luxury-black">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
+      {/* Featured categories grid */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-luxury-black mb-4">
-              Explore Our <span className="luxury-text-gradient">Collections</span>
+              Featured <span className="luxury-text-gradient">Categories</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Discover our curated selection of luxury display solutions, each designed to showcase your treasures with unparalleled elegance.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {categories.map((category) => (
               <Link
@@ -162,24 +115,22 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {/* Bestseller & New arrivals sections */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-luxury-black mb-4">
-              Featured <span className="luxury-text-gradient">Products</span>
+              Bestseller &amp; <span className="luxury-text-gradient">New Arrivals</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Handpicked selections from our premium collection, showcasing the epitome of luxury craftsmanship.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-
           <div className="text-center">
             <Link to="/products">
               <Button className="luxury-button text-lg px-12 py-4">
@@ -191,7 +142,23 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Custom display solutions showcase (3D/AR teaser) */}
+      <section className="py-20 bg-luxury-cream">
+        <div className="max-w-5xl mx-auto text-center px-4">
+          <h2 className="text-4xl font-bold text-luxury-black mb-6">
+            Custom Display Solutions <span className="luxury-text-gradient">(3D/AR Teaser)</span>
+          </h2>
+          <p className="text-xl text-gray-600 mb-8">
+            Experience your display in 3D or Augmented Reality before you buy. Our team can create a virtual preview of your custom solution.
+          </p>
+          {/* Replace below with your actual 3D/AR teaser component */}
+          <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-2xl">
+            [3D/AR Teaser Placeholder]
+          </div>
+        </div>
+      </section>
+
+      {/* Client testimonials carousel */}
       <section className="py-20 bg-luxury-black text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -202,7 +169,6 @@ const HomePage: React.FC = () => {
               Join thousands of satisfied customers who trust Hilal Luxe for their most precious display needs.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -241,24 +207,27 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Newsletter signup */}
       <section className="py-20 bg-luxury-gradient">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Showcase Your Treasures?
+            Stay Updated with Hilal Luxe
           </h2>
           <p className="text-xl text-white/90 mb-8 leading-relaxed">
-            Let our design experts create the perfect display solution for your unique collection. 
-            Schedule a consultation today and discover the Hilal Luxe difference.
+            Subscribe to our newsletter for exclusive offers, new arrivals, and design inspiration.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white text-luxury-black hover:bg-gray-100 text-lg px-8 py-4 font-semibold">
-              Schedule Consultation
+          {/* Replace below with your actual newsletter signup form */}
+          <form className="flex flex-col sm:flex-row gap-4 justify-center">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="px-4 py-3 rounded-lg text-lg w-full sm:w-80"
+              required
+            />
+            <Button className="bg-white text-luxury-black hover:bg-gray-100 text-lg px-8 py-3 font-semibold">
+              Subscribe
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-luxury-black text-lg px-8 py-4">
-              Browse Catalog
-            </Button>
-          </div>
+          </form>
         </div>
       </section>
     </div>

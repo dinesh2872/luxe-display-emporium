@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
@@ -24,10 +23,9 @@ const Header: React.FC = () => {
 
   const navigationItems = [
     { name: 'Home', href: '/' },
-    { name: 'Display Cases', href: '/products/display-cases' },
-    { name: 'Jewelry Displays', href: '/products/jewelry-displays' },
-    { name: 'Watch Displays', href: '/products/watch-displays' },
-    { name: 'Retail Fixtures', href: '/products/retail-fixtures' },
+    { name: 'Products', href: '/products' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
 
   return (

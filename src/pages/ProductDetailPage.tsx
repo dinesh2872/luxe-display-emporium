@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Heart, Share2, Star } from 'lucide-react';
 import { Product } from '../types';
 import { productService } from '../services/productService';
@@ -12,6 +11,7 @@ import { useToast } from '../components/ui/use-toast';
 
 const ProductDetailPage: React.FC = () => {
   const { productId, category } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -21,12 +21,17 @@ const ProductDetailPage: React.FC = () => {
   useEffect(() => {
     const loadProduct = async () => {
       if (!productId) return;
-      
+
       try {
         setLoading(true);
-        const productData = await productService.getProductById(productId);
-        setProduct(productData);
+        const productData = await productService.getProduct(productId);
+        if (!productData || typeof productData === 'string') {
+          setProduct(null);
+        } else {
+          setProduct(productData);
+        }
       } catch (error) {
+        setProduct(null);
         console.error('Error loading product:', error);
       } finally {
         setLoading(false);
@@ -38,14 +43,8 @@ const ProductDetailPage: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!product) return;
-    
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      quantity: 1,
-    });
+
+    addToCart(product, 1, undefined);
 
     toast({
       title: "Added to cart",
@@ -66,9 +65,7 @@ const ProductDetailPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h1>
-          <Link to="/products">
-            <Button>Back to Products</Button>
-          </Link>
+          <Button onClick={() => navigate(-1)}>Back</Button>
         </div>
       </div>
     );
@@ -78,7 +75,7 @@ const ProductDetailPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Link 
+          <Link
             to={category ? `/products/${category}` : '/products'}
             className="inline-flex items-center text-luxury-gold hover:text-luxury-gold/80 transition-colors"
           >
@@ -92,20 +89,20 @@ const ProductDetailPage: React.FC = () => {
           <div className="space-y-4">
             <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
               <img
-                src={product.images[selectedImage]}
+                src={product.images?.[selectedImage] || '/placeholder.png'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            {product.images.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <div className="flex space-x-2">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === index 
-                        ? 'border-luxury-gold' 
+                      selectedImage === index
+                        ? 'border-luxury-gold'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -130,20 +127,22 @@ const ProductDetailPage: React.FC = () => {
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
+                    <Star
+                      key={i}
                       className={`w-5 h-5 ${
-                        i < Math.floor(product.rating) 
-                          ? 'text-luxury-gold fill-current' 
+                        i < Math.round(product.rating || 0)
+                          ? 'text-luxury-gold fill-current'
                           : 'text-gray-300'
-                      }`} 
+                      }`}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">({product.rating})</span>
+                <span className="text-sm text-gray-600">
+                  ({product.rating ? product.rating.toFixed(1) : '0.0'})
+                </span>
               </div>
               <p className="text-4xl font-bold text-luxury-gold mb-6">
-                ${product.price.toLocaleString()}
+                ${product.price?.toLocaleString() ?? 'N/A'}
               </p>
             </div>
 
@@ -158,26 +157,26 @@ const ProductDetailPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="font-medium">Material:</span>
-                    <span className="ml-2 text-gray-600">{product.material}</span>
+                    <span className="ml-2 text-gray-600">{product.material || '-'}</span>
                   </div>
                   <div>
                     <span className="font-medium">Dimensions:</span>
-                    <span className="ml-2 text-gray-600">{product.dimensions}</span>
+                    <span className="ml-2 text-gray-600">{product.dimensions || '-'}</span>
                   </div>
                   <div>
                     <span className="font-medium">Weight:</span>
-                    <span className="ml-2 text-gray-600">{product.weight}</span>
+                    <span className="ml-2 text-gray-600">{product.weight || '-'}</span>
                   </div>
                   <div>
                     <span className="font-medium">SKU:</span>
-                    <span className="ml-2 text-gray-600">{product.sku}</span>
+                    <span className="ml-2 text-gray-600">{product.sku || '-'}</span>
                   </div>
                 </div>
               </Card>
             </div>
 
             <div className="flex space-x-4">
-              <Button 
+              <Button
                 className="flex-1 luxury-button"
                 onClick={handleAddToCart}
               >

@@ -17,7 +17,7 @@ const AccountPage: React.FC = () => {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
-    phone: user?.phone || '',
+    phone: '',
   });
 
   const handleProfileUpdate = async (e: React.FormEvent) => {

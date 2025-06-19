@@ -102,6 +102,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       quantity,
       customizations,
       totalPrice,
+      image: product.images?.[0] || '', // use the first image or an empty string if not available
+      name: product.name,   // assuming product has a name property
+      price: product.basePrice, // or product.price if available
     };
 
     setItems(prevItems => [...prevItems, newItem]);

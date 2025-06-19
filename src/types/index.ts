@@ -52,6 +52,9 @@ export interface Size {
 }
 
 export interface CartItem {
+  image: string;
+  name: string;
+  price: any;
   id: string;
   product: Product;
   quantity: number;

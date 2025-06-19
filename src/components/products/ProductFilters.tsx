@@ -1,14 +1,14 @@
-
-import React from 'react';
-import { Filter, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Filter } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 
 interface FilterOptions {
   categories: string[];
-  priceRange: [number, number];
+  subcategories: string[];
   materials: string[];
+  priceRange: [number, number];
   colors: string[];
   sizes: string[];
   inStock: boolean;
@@ -16,91 +16,180 @@ interface FilterOptions {
 }
 
 interface ProductFiltersProps {
-  filters: FilterOptions;
+  filters?: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   isOpen: boolean;
   onToggle: () => void;
 }
 
+const defaultFilters: FilterOptions = {
+  categories: [],
+  subcategories: [],
+  materials: [],
+  priceRange: [0, 5000],
+  colors: [],
+  sizes: [],
+  inStock: false,
+  featured: false,
+};
+
+// Category structure
+const categoryTree = [
+  {
+    name: 'Jewelry Display',
+    subcategories: [
+      {
+        name: 'Jewelry Box',
+        materials: ['Wooden', 'Paper', 'Leather', 'Velvet', 'Led light'],
+      },
+      { name: 'Jewelry Cases' },
+      {
+        name: 'Jewelry Pouch',
+        materials: [
+          'Jewelry gift packaging',
+          'Velvet Pouch',
+          'Microfiber Pouch',
+          'Satin Pouch',
+        ],
+      },
+      { name: 'Jewelry Display Set' },
+      {
+        name: 'Jewelry Display Stand',
+        types: [
+          'Bangle/Bracelet Display',
+          'Ring Display',
+          'Earring Rack',
+          'Necklace Bust',
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Watch Display Series',
+    subcategories: [
+      { name: 'Watch Display Set' },
+      { name: 'Watch Stand' },
+      { name: 'Watch Box' },
+    ],
+  },
+  {
+    name: 'Trays',
+    subcategories: [
+      { name: 'Eyewear Tray' },
+      { name: 'Jewelry Trays' },
+      { name: 'Watch Tray' },
+    ],
+  },
+  { name: 'Eyeglasses cases & bag' },
+  { name: 'Jewelry Card' },
+  { name: 'Paper Gift Bag' },
+];
+
+const colors = [
+  'Silver',
+  'Gold',
+  'Rose Gold',
+  'Black',
+  'Ebony',
+  'Walnut',
+  'White Oak',
+  'Classic Black',
+  'Cognac Brown',
+  'Navy Blue',
+];
+
+const sizes = [
+  'Small',
+  'Medium',
+  'Large',
+  'Desktop',
+  'Counter',
+  'Floor Stand',
+  '6-Watch',
+  '12-Watch',
+  '24-Watch',
+];
+
 const ProductFilters: React.FC<ProductFiltersProps> = ({
-  filters,
+  filters = defaultFilters,
   onFiltersChange,
   isOpen,
   onToggle,
 }) => {
-  const categories = [
-    'display-cases',
-    'jewelry-displays', 
-    'watch-displays',
-    'retail-fixtures'
-  ];
+  // Helper to get selected category object
+  const selectedCategoryObj = categoryTree.find(
+    (cat) => filters.categories[0] === cat.name
+  );
+  const subcategories = selectedCategoryObj?.subcategories?.map((sub) =>
+    typeof sub === 'string' ? sub : sub.name
+  ) || [];
 
-  const materials = [
-    'Tempered Glass',
-    'Low-Iron Glass', 
-    'Sapphire Crystal',
-    'Polished Wood',
-    'Marble Base',
-    'Carbon Fiber',
-    'Leather Interior',
-    'Suede Interior',
-    'Silk Interior'
-  ];
+  // Helper to get selected subcategory object
+  const selectedSubcategoryObj =
+    selectedCategoryObj?.subcategories &&
+    filters.subcategories[0]
+      ? selectedCategoryObj.subcategories.find(
+          (sub) =>
+            (typeof sub === 'string' ? sub : sub.name) ===
+            filters.subcategories[0]
+        )
+      : undefined;
 
-  const colors = [
-    'Silver',
-    'Gold',
-    'Rose Gold',
-    'Black',
-    'Ebony',
-    'Walnut',
-    'White Oak',
-    'Classic Black',
-    'Cognac Brown',
-    'Navy Blue'
-  ];
+  const materials =
+    (selectedSubcategoryObj &&
+      'materials' in selectedSubcategoryObj &&
+      selectedSubcategoryObj.materials) ||
+    [];
 
-  const sizes = [
-    'Small',
-    'Medium', 
-    'Large',
-    'Desktop',
-    'Counter',
-    'Floor Stand',
-    '6-Watch',
-    '12-Watch',
-    '24-Watch'
-  ];
+  const types =
+    (selectedSubcategoryObj &&
+      'types' in selectedSubcategoryObj &&
+      selectedSubcategoryObj.types) ||
+    [];
 
-  const handleCategoryToggle = (category: string) => {
-    const newCategories = filters.categories.includes(category)
-      ? filters.categories.filter(c => c !== category)
-      : [...filters.categories, category];
-    
-    onFiltersChange({ ...filters, categories: newCategories });
+  // Handlers
+  const handleCategoryChange = (category: string) => {
+    onFiltersChange({
+      ...filters,
+      categories: [category],
+      subcategories: [],
+      materials: [],
+    });
+  };
+
+  const handleSubcategoryChange = (subcategory: string) => {
+    onFiltersChange({
+      ...filters,
+      subcategories: [subcategory],
+      materials: [],
+    });
   };
 
   const handleMaterialToggle = (material: string) => {
     const newMaterials = filters.materials.includes(material)
-      ? filters.materials.filter(m => m !== material)
+      ? filters.materials.filter((m) => m !== material)
       : [...filters.materials, material];
-    
+    onFiltersChange({ ...filters, materials: newMaterials });
+  };
+
+  const handleTypeToggle = (type: string) => {
+    const newMaterials = filters.materials.includes(type)
+      ? filters.materials.filter((m) => m !== type)
+      : [...filters.materials, type];
     onFiltersChange({ ...filters, materials: newMaterials });
   };
 
   const handleColorToggle = (color: string) => {
     const newColors = filters.colors.includes(color)
-      ? filters.colors.filter(c => c !== color)
+      ? filters.colors.filter((c) => c !== color)
       : [...filters.colors, color];
-    
     onFiltersChange({ ...filters, colors: newColors });
   };
 
   const handleSizeToggle = (size: string) => {
     const newSizes = filters.sizes.includes(size)
-      ? filters.sizes.filter(s => s !== size)
+      ? filters.sizes.filter((s) => s !== size)
       : [...filters.sizes, size];
-    
     onFiltersChange({ ...filters, sizes: newSizes });
   };
 
@@ -109,22 +198,15 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   };
 
   const clearAllFilters = () => {
-    onFiltersChange({
-      categories: [],
-      priceRange: [0, 5000],
-      materials: [],
-      colors: [],
-      sizes: [],
-      inStock: false,
-      featured: false,
-    });
+    onFiltersChange(defaultFilters);
   };
 
-  const activeFilterCount = 
-    filters.categories.length + 
-    filters.materials.length + 
-    filters.colors.length + 
-    filters.sizes.length +
+  const activeFilterCount =
+    (filters.categories?.length || 0) +
+    (filters.subcategories?.length || 0) +
+    (filters.materials?.length || 0) +
+    (filters.colors?.length || 0) +
+    (filters.sizes?.length || 0) +
     (filters.inStock ? 1 : 0) +
     (filters.featured ? 1 : 0);
 
@@ -140,9 +222,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           <Filter className="w-4 h-4 mr-2" />
           Filters
           {activeFilterCount > 0 && (
-            <Badge className="ml-2 bg-luxury-gold">
-              {activeFilterCount}
-            </Badge>
+            <Badge className="ml-2 bg-luxury-gold">{activeFilterCount}</Badge>
           )}
         </Button>
       </div>
@@ -154,9 +234,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
             <Filter className="w-5 h-5 mr-2" />
             Filters
             {activeFilterCount > 0 && (
-              <Badge className="ml-2 bg-luxury-gold">
-                {activeFilterCount}
-              </Badge>
+              <Badge className="ml-2 bg-luxury-gold">{activeFilterCount}</Badge>
             )}
           </h3>
           {activeFilterCount > 0 && (
@@ -176,21 +254,81 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
           <div>
             <h4 className="font-medium mb-3">Categories</h4>
             <div className="space-y-2">
-              {categories.map((category) => (
-                <label key={category} className="flex items-center">
+              {categoryTree.map((cat) => (
+                <label key={cat.name} className="flex items-center">
                   <input
-                    type="checkbox"
-                    checked={filters.categories.includes(category)}
-                    onChange={() => handleCategoryToggle(category)}
+                    type="radio"
+                    name="category"
+                    checked={filters.categories[0] === cat.name}
+                    onChange={() => handleCategoryChange(cat.name)}
                     className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
                   />
-                  <span className="ml-2 text-sm capitalize">
-                    {category.replace('-', ' ')}
-                  </span>
+                  <span className="ml-2 text-sm">{cat.name}</span>
                 </label>
               ))}
             </div>
           </div>
+
+          {/* Subcategories */}
+          {subcategories.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">Subcategories</h4>
+              <div className="space-y-2">
+                {subcategories.map((sub) => (
+                  <label key={sub} className="flex items-center">
+                    <input
+                      type="radio"
+                      name="subcategory"
+                      checked={filters.subcategories[0] === sub}
+                      onChange={() => handleSubcategoryChange(sub)}
+                      className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
+                    />
+                    <span className="ml-2 text-sm">{sub}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Materials */}
+          {materials.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">Materials</h4>
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {materials.map((material) => (
+                  <label key={material} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={filters.materials.includes(material)}
+                      onChange={() => handleMaterialToggle(material)}
+                      className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
+                    />
+                    <span className="ml-2 text-sm">{material}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Types */}
+          {types.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">Types</h4>
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {types.map((type) => (
+                  <label key={type} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={filters.materials.includes(type)}
+                      onChange={() => handleTypeToggle(type)}
+                      className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
+                    />
+                    <span className="ml-2 text-sm">{type}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Price Range */}
           <div>
@@ -200,16 +338,26 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                 <input
                   type="number"
                   placeholder="Min"
-                  value={filters.priceRange[0]}
-                  onChange={(e) => handlePriceChange(Number(e.target.value), filters.priceRange[1])}
+                  value={filters.priceRange?.[0] ?? 0}
+                  onChange={(e) =>
+                    handlePriceChange(
+                      Number(e.target.value),
+                      filters.priceRange?.[1] ?? 5000
+                    )
+                  }
                   className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                 />
                 <span>-</span>
                 <input
                   type="number"
                   placeholder="Max"
-                  value={filters.priceRange[1]}
-                  onChange={(e) => handlePriceChange(filters.priceRange[0], Number(e.target.value))}
+                  value={filters.priceRange?.[1] ?? 5000}
+                  onChange={(e) =>
+                    handlePriceChange(
+                      filters.priceRange?.[0] ?? 0,
+                      Number(e.target.value)
+                    )
+                  }
                   className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                 />
               </div>
@@ -231,24 +379,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                   </Button>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Materials */}
-          <div>
-            <h4 className="font-medium mb-3">Materials</h4>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {materials.map((material) => (
-                <label key={material} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filters.materials.includes(material)}
-                    onChange={() => handleMaterialToggle(material)}
-                    className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
-                  />
-                  <span className="ml-2 text-sm">{material}</span>
-                </label>
-              ))}
             </div>
           </div>
 
@@ -295,8 +425,10 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={filters.inStock}
-                  onChange={(e) => onFiltersChange({ ...filters, inStock: e.target.checked })}
+                  checked={!!filters.inStock}
+                  onChange={(e) =>
+                    onFiltersChange({ ...filters, inStock: e.target.checked })
+                  }
                   className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
                 />
                 <span className="ml-2 text-sm">In Stock Only</span>
@@ -304,8 +436,10 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={filters.featured}
-                  onChange={(e) => onFiltersChange({ ...filters, featured: e.target.checked })}
+                  checked={!!filters.featured}
+                  onChange={(e) =>
+                    onFiltersChange({ ...filters, featured: e.target.checked })
+                  }
                   className="rounded border-gray-300 text-luxury-gold focus:ring-luxury-gold"
                 />
                 <span className="ml-2 text-sm">Featured Products</span>

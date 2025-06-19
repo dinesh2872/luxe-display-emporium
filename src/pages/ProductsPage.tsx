@@ -66,7 +66,11 @@ const ProductsPage: React.FC = () => {
 
         <div className="flex gap-8">
           <aside className="w-64 flex-shrink-0">
-            <ProductFilters />
+            <ProductFilters
+              onFiltersChange={() => {}}
+              isOpen={true}
+              onToggle={() => {}}
+            />
           </aside>
 
           <main className="flex-1">

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +21,8 @@ import RegisterPage from "./pages/auth/RegisterPage";
 import AccountPage from "./pages/AccountPage";
 import AdminPage from "./pages/admin/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AboutPage from "./components/about/page";
+import ContactPage from "./components/contact/page";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,8 @@ const App = () => (
               <main className="flex-1">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/products/:category" element={<ProductsPage />} />
                   <Route path="/products/:category/:productId" element={<ProductDetailPage />} />
